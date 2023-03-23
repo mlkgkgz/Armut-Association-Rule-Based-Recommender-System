@@ -35,7 +35,7 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 # pd.set_option('display.max_rows', None)
 pd.set_option('display.width', 500)
-pd.set_option('display.expand_frame_repr', False) # çıktının tek bir satırda olmasını sağlar.
+pd.set_option('display.expand_frame_repr', False) 
 from mlxtend.frequent_patterns import apriori, association_rules
 
 
@@ -43,15 +43,15 @@ df_ = pd.read_csv("Datasets/armut_data.csv")
 df = df_.copy()
 df.head()
 
-def check_df(dataframe, head):
+def check_df(dataframe):
     print("############## Shape #############")
     print(dataframe.shape)
     print("############## Type #############")
     print(dataframe.dtypes)
     print("############## Head #############")
-    print(dataframe.head(head))
+    print(dataframe.head())
     print("############## Tail #############")
-    print(dataframe.tail(head))
+    print(dataframe.tail())
     print("############## NA #############")
     print(dataframe.isnull().sum())
     print("############## Quantiles #############")
@@ -91,25 +91,14 @@ for col in df.columns:
 df["New_Date"] = pd.to_datetime(df["CreateDate"],format='%Y-%m').dt.to_period('M')
 df.head()
 
-# Diğer Yollar:
-# I.
-#df['date'] = pd.to_datetime(df['CreateDate']).dt.to_period('M')
-#df['ID'] = df['UserId'].astype(str) + '_' + df['date'].astype(str)
 
-# II.
-#df["New_Date"] = [i[0:7] for i in df["CreateDate"]]
 
 
 # SepetID = UserID_New_Date oluşturulacak
 
 df["SepetID"] = (df["UserId"].astype(str) + "_" + df["New_Date"].astype(str))
 
-# Out[79]:
-# 0         25446_2017-08
-# 1         22948_2017-08
 
-# II. yol
-#df["SepetId"] = [str(row[0]) + "_" + str(row[5]) for row in df.values]
 
 
 #########################
@@ -135,28 +124,11 @@ df.head()
 df.groupby(["SepetID", "Hizmet"]).agg({"CategoryId": "count"}).unstack().iloc[0:5, 0:10]
 
 
-#               CategoryId
-# Hizmet               0_8 10_9 11_11 12_7 13_11 14_7 15_1 16_8 17_5 18_4
-# SepetID
-# 0_2017-08            NaN  NaN   NaN  NaN   NaN  NaN  NaN  NaN  NaN  NaN
-# 0_2017-09            NaN  NaN   NaN  NaN   NaN  NaN  NaN  NaN  NaN  NaN
-# 0_2018-01            NaN  NaN   NaN  NaN   NaN  NaN  NaN  NaN  NaN  NaN
-# 0_2018-04            NaN  NaN   NaN  NaN   NaN  1.0  NaN  NaN  NaN  NaN
-# 10000_2017-08        NaN  NaN   NaN  NaN   NaN  NaN  NaN  NaN  NaN  NaN
 
 # çıktıda değişkenler 1-0 olarak çıksın istiyorum. şöyle olsun: CategoryId den hizmet satın alırı saydır dolu olanlara 1, NaN değerlere 0 yaz.
 df.groupby(["SepetID", "Hizmet"]).agg({"CategoryId": "count"}).unstack().fillna(0).applymap(lambda x: 1 if x > 0 else 0).iloc[0:5, 0:10]
 
 
-
-#               CategoryId
-# Hizmet               0_8 10_9 11_11 12_7 13_11 14_7 15_1 16_8 17_5 18_4
-# SepetID
-# 0_2017-08              0    0     0    0     0    0    0    0    0    0
-# 0_2017-09              0    0     0    0     0    0    0    0    0    0
-# 0_2018-01              0    0     0    0     0    0    0    0    0    0
-# 0_2018-04              0    0     0    0     0    1    0    0    0    0
-# 10000_2017-08          0    0     0    0     0    0    0    0    0    0
 
 # bunu fonksiyonla ifade edelim.
 
